@@ -4,8 +4,18 @@
 
   <el-container id="out">
 
-    <el-header>
+    <el-header class="main-header">
       <el-text class="title-text" size="large">SpokenGPT</el-text>
+      <div class="header-actions">
+        <el-button-group>
+          <el-button :type="activeView === 'chat' ? 'primary' : 'default'" @click="activeView = 'chat'">
+            口语练习
+          </el-button>
+          <el-button :type="activeView === 'prompter' ? 'primary' : 'default'" @click="activeView = 'prompter'">
+            提词器
+          </el-button>
+        </el-button-group>
+      </div>
       <div class="avatar">
         <el-input v-model="name" style="display:inline;" placeholder="Your name..."/>
         <el-avatar style="margin-left: 16px"> {{ getFirstChar(name) }}</el-avatar>
@@ -108,7 +118,7 @@
       </el-aside>
 
       <el-main id="chat">
-        <el-scrollbar>
+        <el-scrollbar v-if="activeView === 'chat'">
         <div id="chatUI" v-if="chatMode">
 
           <el-dialog v-model="dialogRecordVisible" title="正在录制...">
@@ -171,6 +181,9 @@
           <el-empty description="在左侧新建会话，或查看历史会话"/>
         </div>
         </el-scrollbar>
+        <div v-else class="prompter-view">
+          <Teleprompter />
+        </div>
       </el-main>
     </el-container>
 
@@ -189,11 +202,13 @@ import axios from "axios";
 import Recorder from 'js-audio-recorder';
 import {part2TopicPool, dailyLevel} from '../src/assets/js/pool'
 import part1TopicPool from '../public/part1.json'
+import Teleprompter from "./components/Teleprompter.vue";
 
 export default {
-  components: {Delete, ChatSquare, Plus},
+  components: {Delete, ChatSquare, Plus, Teleprompter},
   data() {
     return {
+      activeView: 'chat',
       part1Option: part1TopicPool,
       part2Option: part2TopicPool,
       // part2Option: part2TopicPool,
@@ -419,3 +434,22 @@ export default {
 }
 
 </script>
+
+<style scoped>
+.main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.header-actions {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.prompter-view {
+  padding: 24px;
+}
+</style>
